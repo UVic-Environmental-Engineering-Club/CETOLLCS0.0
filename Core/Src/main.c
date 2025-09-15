@@ -23,6 +23,19 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include <rcl/rcl.h>
+#include <rcl/error_handling.h>
+#include <rclc/rclc.h>
+#include <rclc/executor.h>
+#include <uxr/client/transport.h>
+#include <rmw_microxrcedds_c/config.h>
+#include <rmw_microros/rmw_microros.h>
+
+#include <std_msgs/msg/int32.h>
+
+// RCL return Check
+#define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){error_loop();}}
+#define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){error_loop();}}
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,10 +55,10 @@ typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart5;
+UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart3;
-DMA_HandleTypeDef hdma_uart5_tx;
-DMA_HandleTypeDef hdma_uart5_rx;
+DMA_HandleTypeDef hdma_uart4_rx;
+DMA_HandleTypeDef hdma_uart4_tx;
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
@@ -71,7 +84,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART3_UART_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
-static void MX_UART5_Init(void);
+static void MX_UART4_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -115,7 +128,7 @@ int main(void)
   MX_DMA_Init();
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
-  MX_UART5_Init();
+  MX_UART4_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -185,7 +198,7 @@ void SystemClock_Config(void)
   * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSEState = RCC_HSE_BYPASS;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 8;
@@ -214,35 +227,35 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief UART5 Initialization Function
+  * @brief UART4 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_UART5_Init(void)
+static void MX_UART4_Init(void)
 {
 
-  /* USER CODE BEGIN UART5_Init 0 */
+  /* USER CODE BEGIN UART4_Init 0 */
 
-  /* USER CODE END UART5_Init 0 */
+  /* USER CODE END UART4_Init 0 */
 
-  /* USER CODE BEGIN UART5_Init 1 */
+  /* USER CODE BEGIN UART4_Init 1 */
 
-  /* USER CODE END UART5_Init 1 */
-  huart5.Instance = UART5;
-  huart5.Init.BaudRate = 115200;
-  huart5.Init.WordLength = UART_WORDLENGTH_8B;
-  huart5.Init.StopBits = UART_STOPBITS_1;
-  huart5.Init.Parity = UART_PARITY_NONE;
-  huart5.Init.Mode = UART_MODE_TX_RX;
-  huart5.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart5.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart5) != HAL_OK)
+  /* USER CODE END UART4_Init 1 */
+  huart4.Instance = UART4;
+  huart4.Init.BaudRate = 115200;
+  huart4.Init.WordLength = UART_WORDLENGTH_8B;
+  huart4.Init.StopBits = UART_STOPBITS_1;
+  huart4.Init.Parity = UART_PARITY_NONE;
+  huart4.Init.Mode = UART_MODE_TX_RX;
+  huart4.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart4.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart4) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN UART5_Init 2 */
+  /* USER CODE BEGIN UART4_Init 2 */
 
-  /* USER CODE END UART5_Init 2 */
+  /* USER CODE END UART4_Init 2 */
 
 }
 
@@ -325,12 +338,12 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA1_Stream0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
-  /* DMA1_Stream7_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream7_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream7_IRQn);
+  /* DMA1_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn);
+  /* DMA1_Stream4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream4_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream4_IRQn);
 
 }
 
@@ -349,10 +362,10 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOG_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, LD1_Pin|LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
@@ -392,7 +405,15 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+bool cubemx_transport_open(struct uxrCustomTransport * transport);
+bool cubemx_transport_close(struct uxrCustomTransport * transport);
+size_t cubemx_transport_write(struct uxrCustomTransport* transport, const uint8_t * buf, size_t len, uint8_t * err);
+size_t cubemx_transport_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err);
 
+void * microros_allocate(size_t size, void * state);
+void microros_deallocate(void * pointer, void * state);
+void * microros_reallocate(void * pointer, size_t size, void * state);
+void * microros_zero_allocate(size_t number_of_elements, size_t size_of_element, void * state);
 /* USER CODE END 4 */
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -405,11 +426,118 @@ static void MX_GPIO_Init(void)
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+	// To check if the code has been flashed successfully
+	for (int i = 0; i < 8; i ++) {
+		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+		HAL_Delay(100);
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
+		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+		HAL_Delay(100);
+	}
+
+
+	// micro-ROS configuration
+
+	  rmw_uros_set_custom_transport(
+	    true,
+	    (void *) &huart4,
+	    cubemx_transport_open,
+	    cubemx_transport_close,
+	    cubemx_transport_write,
+	    cubemx_transport_read);
+
+	  rcl_allocator_t freeRTOS_allocator = rcutils_get_zero_initialized_allocator();
+	  freeRTOS_allocator.allocate = microros_allocate;
+	  freeRTOS_allocator.deallocate = microros_deallocate;
+	  freeRTOS_allocator.reallocate = microros_reallocate;
+	  freeRTOS_allocator.zero_allocate =  microros_zero_allocate;
+
+	  if (!rcutils_set_default_allocator(&freeRTOS_allocator)) {
+	      printf("Error on default allocators (line %d)\n", __LINE__);
+	  }
+
+	  // micro-ROS app
+
+	  rcl_publisher_t publisher;
+	  std_msgs__msg__Int32 msg;
+	  rclc_support_t support;
+	  rcl_allocator_t allocator;
+	  rcl_node_t node;
+
+	  HAL_Delay(1000);
+	  for (int i = 0; i < 8; i ++) {
+	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	  		HAL_Delay(100);
+	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
+	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	  		HAL_Delay(100);
+	  }
+
+	  allocator = rcl_get_default_allocator();
+
+	  HAL_Delay(1000);
+	  	  for (int i = 0; i < 10; i ++) {
+	  	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	  	  		HAL_Delay(100);
+	  	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
+	  	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	  	  		HAL_Delay(100);
+	  	  }
+
+	  //create init_options
+	  rclc_support_init(&support, 0, NULL, &allocator);
+
+	  HAL_Delay(1000);
+	  	  for (int i = 0; i < 12; i ++) {
+	  	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	  	  		HAL_Delay(100);
+	  	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
+	  	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	  	  		HAL_Delay(100);
+	  	  }
+
+	  // create node
+	  rclc_node_init_default(&node, "cubemx_node", "", &support);
+
+	  HAL_Delay(1000);
+	  	  for (int i = 0; i < 14; i ++) {
+	  	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	  	  		HAL_Delay(100);
+	  	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
+	  	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	  	  		HAL_Delay(100);
+	  	  }
+
+	  // create publisher
+	  rclc_publisher_init_default(
+	    &publisher,
+	    &node,
+	    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+	    "cubemx_publisher");
+
+	  HAL_Delay(1000);
+	  	  for (int i = 0; i < 16; i ++) {
+	  	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	  	  		HAL_Delay(100);
+	  	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
+	  	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+	  	  		HAL_Delay(100);
+	  	  }
+
+	  msg.data = 0;
+
+	  for(;;)
+	  {
+	    rcl_ret_t ret = rcl_publish(&publisher, &msg, NULL);
+	    if (ret != RCL_RET_OK)
+	    {
+	      printf("Error publishing (line %d)\n", __LINE__);
+	    }
+
+	    msg.data++;
+	    osDelay(500);
+	    HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+	  }
   /* USER CODE END 5 */
 }
 
