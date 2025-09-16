@@ -435,10 +435,8 @@ void StartDefaultTask(void *argument)
 		HAL_Delay(100);
 	}
 
-
 	// micro-ROS configuration
-
-	  rmw_uros_set_custom_transport(
+	  /*rmw_uros_set_custom_transport(
 	    true,
 	    (void *) &huart4,
 	    cubemx_transport_open,
@@ -454,77 +452,77 @@ void StartDefaultTask(void *argument)
 
 	  if (!rcutils_set_default_allocator(&freeRTOS_allocator)) {
 	      printf("Error on default allocators (line %d)\n", __LINE__);
-	  }
+	  }*/
 
 	  // micro-ROS app
 
-	  rcl_publisher_t publisher;
+	  /*rcl_publisher_t publisher;
 	  std_msgs__msg__Int32 msg;
 	  rclc_support_t support;
 	  rcl_allocator_t allocator;
-	  rcl_node_t node;
+	  rcl_node_t node;*/
 
-	  HAL_Delay(1000);
+	  /*HAL_Delay(1000);
 	  for (int i = 0; i < 8; i ++) {
-	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
 	  		HAL_Delay(100);
-	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
+	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 	  		HAL_Delay(100);
-	  }
+	  }*/
 
-	  allocator = rcl_get_default_allocator();
+	  // allocator = rcl_get_default_allocator();
 
-	  HAL_Delay(1000);
-	  	  for (int i = 0; i < 10; i ++) {
-	  	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	  	  		HAL_Delay(100);
-	  	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
-	  	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  	  		HAL_Delay(100);
-	  	  }
+	  /*HAL_Delay(1000);
+	  for (int i = 0; i < 10; i ++) {
+			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+			HAL_Delay(100);
+			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+			HAL_Delay(100);
+	  }*/
 
 	  //create init_options
-	  rclc_support_init(&support, 0, NULL, &allocator);
+	  // rclc_support_init(&support, 0, NULL, &allocator);
 
-	  HAL_Delay(1000);
-	  	  for (int i = 0; i < 12; i ++) {
-	  	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	  	  		HAL_Delay(100);
-	  	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
-	  	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  	  		HAL_Delay(100);
-	  	  }
+	  /*HAL_Delay(1000);
+	  for (int i = 0; i < 12; i ++) {
+			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+			HAL_Delay(100);
+			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+			HAL_Delay(100);
+	  }*/
 
 	  // create node
-	  rclc_node_init_default(&node, "cubemx_node", "", &support);
+	  // rclc_node_init_default(&node, "cubemx_node", "", &support);
 
-	  HAL_Delay(1000);
-	  	  for (int i = 0; i < 14; i ++) {
-	  	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	  	  		HAL_Delay(100);
-	  	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
-	  	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  	  		HAL_Delay(100);
-	  	  }
+	  /*HAL_Delay(1000);
+	  for (int i = 0; i < 14; i ++) {
+			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+			HAL_Delay(100);
+			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+			HAL_Delay(100);
+	  }*/
 
 	  // create publisher
-	  rclc_publisher_init_default(
+	  /*rclc_publisher_init_default(
 	    &publisher,
 	    &node,
 	    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-	    "cubemx_publisher");
+	    "cubemx_publisher");*/
 
-	  HAL_Delay(1000);
-	  	  for (int i = 0; i < 16; i ++) {
-	  	  		/*HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-	  	  		HAL_Delay(100);
-	  	  		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);*/
-	  	  		HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-	  	  		HAL_Delay(100);
-	  	  }
+	  /*HAL_Delay(1000);
+	  for (int i = 0; i < 16; i ++) {
+			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+			HAL_Delay(100);
+			HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+			HAL_Delay(100);
+	  }*/
 
-	  msg.data = 0;
+	  /*msg.data = 0;
 
 	  for(;;)
 	  {
@@ -537,7 +535,7 @@ void StartDefaultTask(void *argument)
 	    msg.data++;
 	    osDelay(500);
 	    HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-	  }
+	  }*/
   /* USER CODE END 5 */
 }
 
